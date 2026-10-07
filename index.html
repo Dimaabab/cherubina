@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Черубина де Габриак — Визуальный конспект</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0b0c10; /* Красивый глубокий темный фон */
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px 120px 20px; /* Отступ снизу для плеера */
+        }
+
+        /* Общая карточка конспекта */
+        .card {
+            max-width: 600px;
+            width: 100%;
+            background-color: #1f2833; /* Тёмно-серый блок карточки */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+
+        /* Контейнер для вашей картинки */
+        .image-container {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Картинка сохраняет свой оригинальный размер и НЕ размывается */
+        .image-container img {
+            width: 364px;
+            height: 204px;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Оформление текста */
+        .author {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #c5a059; /* Спокойное золото */
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .title {
+            font-size: 22px;
+            margin-bottom: 25px;
+            font-weight: 400;
+            color: #ecf0f1;
+        }
+
+        .poem {
+            font-size: 17px;
+            line-height: 1.6;
+            text-align: left;
+            display: inline-block;
+            color: #e0e0e0;
+        }
+
+        .stanza {
+            margin-bottom: 20px;
+        }
+
+        /* Фирменная интерактивная панель плеера */
+        .player-panel {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(15, 15, 15, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .player-panel button {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 22px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .player-panel button:hover {
+            background-color: #e0e0e0;
+        }
+
+        #time-display {
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Скрытый плеер под ваш файл music.mp3 -->
+<audio id="bg-music" src="music.mp3" loop></audio>
+
+<div class="card">
+    <!-- Сюда вставляется ваша картинка в оригинальном качестве -->
+    <div class="image-container">
+        <img src="background.jpg" alt="Визуальный конспект">
+    </div>
+
+    <div class="author">Черубина де Габриак</div>
+    <div class="title">«Ангел громко и мерно читает...»</div>
+    
+    <div class="poem">
+        <div class="stanza">
+            Ангел громко и мерно читает<br>
+            Уже много ночей<br>
+            Книгу жизни моей,<br>
+            Вся, как солнце, она золотая,<br>
+            Каждый чётко записан в ней день,<br>
+            Каждый месяц – певучая стая,<br>
+            И проходят года, расцветая,<br>
+            Как густая сирень.
+        </div>
+        
+        <div class="stanza">
+            Но одна есть страница пустая<br>
+            Уже в самом конце –<br>
+            И с печалью в лице<br>
+            Ангел книгу мою закрывает...<br>
+            Даже он, даже ангел не знает<br>
+            То, что будет в конце.
+        </div>
+    </div>
+</div>
+
+<!-- Панель управления треком -->
+<div class="player-panel">
+    <button id="play-btn" onclick="togglePlay()">▶ Старт</button>
+    <div id="time-display">0:00 / --:--</div>
+</div>
+
+<script>
+    const audio = document.getElementById('bg-music');
+    const playBtn = document.getElementById('play-btn');
+    const timeDisplay = document.getElementById('time-display');
+
+    function formatTime(seconds) {
+        if (isNaN(seconds) || seconds === Infinity) return "0:00";
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function togglePlay() {
+        if (audio.paused) {
+            audio.play().catch(err => {
+                console.log("Проверьте файл music.mp3 в папке", err);
+            });
+            playBtn.innerText = "❚❚ Пауза";
+        } else {
+            audio.pause();
+            playBtn.innerText = "▶ Старт";
+        }
+    }
+
+    audio.addEventListener('timeupdate', () => {
+        const current = formatTime(audio.currentTime);
+        const total = formatTime(audio.duration) !== "0:00" ? formatTime(audio.duration) : "--:--";
+        timeDisplay.innerText = `${current} / ${total}`;
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        timeDisplay.innerText = `0:00 / ${formatTime(audio.duration)}`;
+    });
+</script>
+
+</body>
+</html>
